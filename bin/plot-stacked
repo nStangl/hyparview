@@ -1,4 +1,6 @@
-#!/usr/bin/env gnuplot -c
+#!/bin/sh
+
+exec gnuplot -c /dev/stdin "$1" << 'EOF'
 set style data histograms
 set style histogram rowstacked
 set boxwidth 1 relative
@@ -12,5 +14,6 @@ set ylabel "Messages"
 set xrange [1:30]
 set yrange [0:10000]
 
-file(n) = sprintf("data/%04d-gossip", n)
+file(n) = sprintf("data/%05d/gossip", n)
 plot for [world=1:ARG1] for [col=2:4] file(world) using 1:col with lines title columnheader
+EOF

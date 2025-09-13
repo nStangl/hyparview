@@ -1,15 +1,17 @@
-#!/usr/bin/env gnuplot -c
-# title = ARG1
-# data = ARG2
-# last = ARG3
+#!/bin/sh
+# title = $1
+# data = $2
+# last = $3
 
+exec gnuplot -c /dev/stdin "$1" "$2" "$3" << 'EOF'
 set title ARG1
 set xlabel ARG1
 set ylabel "Count Peers"
 set ytics "10"
 set term png tiny
 
-file(n) = sprintf("data/%04d-".ARG2, n)
+file(n) = sprintf("data/%05d/".ARG2, n)
 file_lb(n) = sprintf("%04d-", n)
 
 plot for [i = 1:ARG3] file(i) with lines
+EOF
