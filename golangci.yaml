@@ -1,0 +1,22 @@
+
+version: "2"
+run:
+  timeout: 5m
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+#    - unused
+#    - revive
+    - prealloc
+    - noctx
+    - sloglint
+    - zerologlint
+    - mirror
+issues:
+  exclude-rules:
+    - path: "_test\\.go"
+      linters:
+        - errcheck
