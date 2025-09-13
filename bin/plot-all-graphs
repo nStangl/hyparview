@@ -1,7 +1,6 @@
 #!/bin/sh
 
 for i in data/*-graph-*; do
-    line="./bin/plot-chord \"$i\" \"plot/${i#data/}.png\""
-    echo slow: $line
-    $line
+    echo slow: ./bin/plot-chord "$i" "plot/${i#data/}.png"
+    ./bin/plot-chord "$i" "plot/${i#data/}.png"
 done
