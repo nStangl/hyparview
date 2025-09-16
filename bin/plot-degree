@@ -11,7 +11,7 @@ set ytics "10"
 set term png tiny
 
 file(n) = sprintf("data/%05d/".ARG2, n)
-file_lb(n) = sprintf("%04d-", n)
+file_lb(n) = sprintf("%05d-", n)
 
 plot for [i = 1:ARG3] file(i) with lines
 EOF

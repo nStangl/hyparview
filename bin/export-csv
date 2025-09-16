@@ -8,7 +8,7 @@ EOF
     exit 1
 fi
 
-sim="${2:-0001}"
+sim="${2:-00001}"
 
 echo 'source;target'
-< "data/$sim-graph-$1" tr '\t' ';'
+< "data/$sim/graph-$1" tr '\t' ';'
