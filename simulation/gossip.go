@@ -1,6 +1,6 @@
 package simulation
 
-import h "github.com/hashicorp/hyparview"
+import h "github.com/nStangl/hyparview"
 
 type gossip struct {
 	to   h.Node

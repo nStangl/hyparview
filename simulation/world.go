@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	h "github.com/hashicorp/hyparview"
+	h "github.com/nStangl/hyparview"
 )
 
 type World struct {

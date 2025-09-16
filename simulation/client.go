@@ -3,7 +3,7 @@ package simulation
 import (
 	"fmt"
 
-	h "github.com/hashicorp/hyparview"
+	h "github.com/nStangl/hyparview"
 )
 
 type Client struct {

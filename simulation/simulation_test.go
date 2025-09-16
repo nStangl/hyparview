@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"testing"
 
-	h "github.com/hashicorp/hyparview"
+	h "github.com/nStangl/hyparview"
 )
 
 // TestSimulation is the test entry point

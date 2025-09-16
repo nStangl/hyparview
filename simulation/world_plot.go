@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	h "github.com/hashicorp/hyparview"
+	h "github.com/nStangl/hyparview"
 )
 
 func (w *World) dir() string {

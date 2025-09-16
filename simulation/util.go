@@ -3,7 +3,7 @@ package simulation
 import (
 	"math/rand"
 
-	h "github.com/hashicorp/hyparview"
+	h "github.com/nStangl/hyparview"
 )
 
 func shuffle(ks []string) {

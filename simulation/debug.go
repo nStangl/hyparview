@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	h "github.com/hashicorp/hyparview"
+	h "github.com/nStangl/hyparview"
 )
 
 // symCheck is an adhoc debugging tool
