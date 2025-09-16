@@ -170,7 +170,7 @@ func TestNeighborSymmetry(t *testing.T) {
 
 	// Active view overflows, sends a disconnect. The disconnected peer is selected at
 	// random, so we need to seed a deterministic outcome
-	rand.Seed(0)
+	rand.New(rand.NewSource(0))
 	v["a"].RecvJoin(NewJoin(v["a"].Self, NewNode("d")))
 	for _, m := range s["a"].reset() {
 		t := m.To().Addr()

@@ -1,6 +1,6 @@
 module github.com/nStangl/hyparview
 
-go 1.22
+go 1.24
 
 require (
 	github.com/hashicorp/hyparview v0.0.0-20230117192507-498a1e8eac37

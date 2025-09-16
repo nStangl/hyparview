@@ -42,7 +42,7 @@ func TestSimulation(t *testing.T) {
 // testSimulation is the entry point to test a single world
 // World configuration and assertion goes here
 func testSimulation(t *testing.T, i int, peers int, seed int64) {
-	rand.Seed(seed)
+	rand.New(rand.NewSource(seed))
 	fmt.Printf("world: %d seed: %d peers: %d\n", i, seed, peers)
 
 	w := simulation(WorldConfig{
