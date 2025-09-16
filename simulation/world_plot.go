@@ -14,7 +14,11 @@ func (w *World) dir() string {
 }
 
 func (w *World) mkdir() {
-	os.MkdirAll(w.dir(), 0777)
+	err := os.MkdirAll(w.dir(), 0777)
+	if err != nil {
+		panic(err)
+	}
+
 }
 
 func (w *World) plotPath(file string) string {
@@ -23,6 +27,7 @@ func (w *World) plotPath(file string) string {
 
 func (w *World) Connected() error {
 	// populate the lost list
+	// greedyShuffle tries to populate our active view on RecvShuffle
 	lost := make(map[string]*Client, len(w.nodes))
 	nodes := w.nodeKeys()
 	for _, n := range nodes {
@@ -54,7 +59,7 @@ func (w *World) Connected() error {
 		w.plotPeer(n)
 	}
 
-	return fmt.Errorf("%d connected, %d lost\n", len(w.nodes)-len(lost), len(lost))
+	return fmt.Errorf("%d connected, %d lost", len(w.nodes)-len(lost), len(lost))
 }
 
 func (w *World) plotPeer(peer string) {
@@ -65,11 +70,16 @@ func (w *World) plotPeer(peer string) {
 	}
 
 	f, _ := os.Create(w.plotPath("log-peer-" + peer))
-	defer f.Close()
+	defer func() {
+		CheckError(f.Close())
+	}()
 
-	fmt.Fprintf(f, "self:       %s\n", client.Self.Addr())
-	fmt.Fprintf(f, "active:     %s\n", strings.Join(nodeAddr(client.Active.Nodes), " "))
-	fmt.Fprintf(f, "passive:    %s\n", strings.Join(nodeAddr(client.Passive.Nodes), " "))
+	_, err := fmt.Fprintf(f, "self:       %s\n", client.Self.Addr())
+	CheckError(err)
+	_, err = fmt.Fprintf(f, "active:     %s\n", strings.Join(nodeAddr(client.Active.Nodes), " "))
+	CheckError(err)
+	_, err = fmt.Fprintf(f, "passive:    %s\n", strings.Join(nodeAddr(client.Passive.Nodes), " "))
+	CheckError(err)
 
 	// find and print in-degree
 	in := []string{}
@@ -78,7 +88,8 @@ func (w *World) plotPeer(peer string) {
 			in = append(in, p.Self.Addr())
 		}
 	}
-	fmt.Fprintf(f, "in active:  %s\n", strings.Join(in, " "))
+	_, err = fmt.Fprintf(f, "in active:  %s\n", strings.Join(in, " "))
+	CheckError(err)
 
 	in = []string{}
 	for _, p := range w.randNodes() {
@@ -86,13 +97,15 @@ func (w *World) plotPeer(peer string) {
 			in = append(in, p.Self.Addr())
 		}
 	}
-	fmt.Fprintf(f, "in passive: %s\n", strings.Join(in, " "))
+	_, err = fmt.Fprintf(f, "in passive: %s\n", strings.Join(in, " "))
+	CheckError(err)
 
 	// History
 	wr := bufio.NewWriter(f)
 	head := "%s\t%s\t%s\t%s\t%s\n"
 	row := "%s\t%s\t%s\t%s\t%d\n"
-	fmt.Fprintf(wr, head, "node", "type", "io", "peer", "datum")
+	_, err = fmt.Fprintf(wr, head, "node", "type", "io", "peer", "datum")
+	CheckError(err)
 	for _, m := range client.history {
 		io := "o"
 		peer := m.To().Addr()
@@ -101,7 +114,8 @@ func (w *World) plotPeer(peer string) {
 			peer = m.From().Addr()
 		}
 
-		fmt.Fprintf(wr, row, client.Self.Addr(), m.Type(), io, peer, datum(m))
+		_, err = fmt.Fprintf(wr, row, client.Self.Addr(), m.Type(), io, peer, datum(m))
+		CheckError(err)
 	}
 	wr.Flush()
 }
@@ -143,9 +157,11 @@ func (w *World) isSymmetric() error {
 }
 
 func (w *World) plotSeed(seed int64) {
-	f, _ := os.Create(w.plotPath("seed"))
+	f, err := os.Create(w.plotPath("seed"))
+	CheckError(err)
 	defer f.Close()
-	f.WriteString(fmt.Sprintf("%d\n", seed))
+	_, err = fmt.Fprintf(f, "%d\n", seed)
+	CheckError(err)
 }
 
 func (w *World) plotBootstrapCount() {
@@ -164,7 +180,8 @@ func (w *World) plotBootstrapCount() {
 	// go in order to avoid map range
 	for i := 0; i <= max; i++ {
 		if c, ok := h[i]; ok {
-			f.WriteString(fmt.Sprintf("%d %d\n", i, c))
+			_, err := fmt.Fprintf(f, "%d %d\n", i, c)
+			CheckError(err)
 		}
 	}
 }
@@ -204,7 +221,7 @@ func (w *World) plotOutDegree() {
 			if peers == 0 {
 				continue
 			}
-			f.WriteString(fmt.Sprintf("%d %d\n", outDegree, peers))
+			fmt.Fprintf(f, "%d %d\n", outDegree, peers)
 		}
 	}
 
@@ -227,7 +244,7 @@ func (w *World) plotGraph(plotName string, part getPart) {
 	for _, v := range w.randNodes() {
 		from := v.Self.Addr()
 		for _, n := range part(v).Nodes {
-			f.WriteString(fmt.Sprintf(row, from, n.Addr()))
+			fmt.Fprintf(f, row, from, n.Addr())
 		}
 	}
 }
@@ -260,7 +277,7 @@ func (w *World) plotInDegree() {
 			if peers == 0 {
 				continue
 			}
-			f.WriteString(fmt.Sprintf("%d %d\n", inDegree, peers))
+			fmt.Fprintf(f, "%d %d\n", inDegree, peers)
 		}
 	}
 
@@ -309,8 +326,8 @@ func (w *World) plotGossip() {
 	f, _ := os.Create(w.plotPath("gossip"))
 	defer f.Close()
 
-	f.WriteString(fmt.Sprintf("%s %s %s %s\n", "Round", "Gossip", "Waste", "Hyparview"))
+	fmt.Fprintf(f, "%s %s %s %s\n", "Round", "Gossip", "Waste", "Hyparview")
 	for i, r := range w.gossipRound {
-		f.WriteString(fmt.Sprintf("%d %d %d %d\n", i+1, r.seen, r.waste, r.maint))
+		fmt.Fprintf(f, "%d %d %d %d\n", i+1, r.seen, r.waste, r.maint)
 	}
 }

@@ -88,6 +88,8 @@ func (v *Hyparview) PromotePassiveBut(peer Node) Node {
 }
 
 // greedyShuffle tries to populate our active view on RecvShuffle
+//
+//nolint:unused
 func (v *Hyparview) greedyShuffle() {
 	if !v.Active.IsFull() {
 		v.PromotePassive()

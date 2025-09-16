@@ -9,6 +9,8 @@ import (
 )
 
 // symCheck is an adhoc debugging tool
+//
+//nolint:unused
 func (w *World) symCheck(m h.Message) {
 	// if w.spinCountM == nil {
 	// 	w.spinCountM = map[string]int{}
@@ -59,7 +61,7 @@ func (w *World) symCheck(m h.Message) {
 		}
 		n := w.get(m1.From().Addr())
 		m := w.get(m.To().Addr())
-		if !(n.Active.Contains(m.Self) && m.Active.Contains(n.Self)) {
+		if !n.Active.Contains(m.Self) || !m.Active.Contains(n.Self) {
 			log.Printf("nei %s %s", m1.From().Addr(), m1.To().Addr())
 		}
 	default:
@@ -69,6 +71,7 @@ func (w *World) symCheck(m h.Message) {
 	// w.spinPrint()
 }
 
+//nolint:unused
 func (w *World) spinPrint() {
 	if h.Rint(100000) == 1 {
 		var ss []string
