@@ -1,21 +1,26 @@
-* What's This?
+# What's This?
 
+Modernized fork of HashiCorp's HyParView implementation, updated with Go 1.24+ and current dependencies. Created for thesis research on a Plumtree-based protocol.
+Core of the implementation has been largely left unchanged.
+
+HyParView implements:
 - Partial membership for gossip clusters
-- [[https://www.semanticscholar.org/paper/HyParView%253A-A-Membership-Protocol-for-Reliable-Leit%C3%A3o-Pereira/a2562ede25e8ed2c7c1d888d72b625a526b3b25a][The Paper]] in production in [[http://partisan.cloud][Partisan]]
+- [The Paper](https://www.semanticscholar.org/paper/HyParView%253A-A-Membership-Protocol-for-Reliable-Leit%C3%A3o-Pereira/a2562ede25e8ed2c7c1d888d72b625a526b3b25a) in production in [Partisan](http://partisan.cloud)
 - 10k node cluster requires 5 active and 30 passive peers in views at
   each node
 - Side goal: demonstrate separation of state changes from async or
   mutex behavior to improve testing options
 
-* Running The Simulation
+## Running The Simulation
 
-=brew install gnuplot=
+```
+brew install gnuplot
+make simulation
+```
 
-=make simulation=
+See `data` for the data input. Plotting output is in `plot`
 
-See =data= for the data input. Plotting output is in =plot=
-
-** Known bugs
+## Known bugs
 
 - The simulation consistently shows a number of asymmetric links,
   these would actually be repaired in a stable system that continued
@@ -66,4 +71,4 @@ See =data= for the data input. Plotting output is in =plot=
 * Live Test
 
 There's an example secure GRPC application of this library at
-[[https://github.com/hashicorp/hyparview-example][hyparview-example]]. It will be used for a live test on hardware.
+[hashicorp/hyparview-example](https://github.com/hashicorp/hyparview-example). It will be used for a live test on hardware.
