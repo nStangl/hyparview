@@ -141,6 +141,19 @@ func TestRecvForwardJoin(t *testing.T) {
 	require.True(t, ok)
 }
 
+// seededRandom implements RandomSource with a deterministic seed
+type seededRandom struct {
+	rng *rand.Rand
+}
+
+func newSeededRandom(seed int64) RandomSource {
+	return &seededRandom{rng: rand.New(rand.NewSource(seed))}
+}
+
+func (s *seededRandom) Intn(n int) int {
+	return s.rng.Intn(n)
+}
+
 func TestNeighborSymmetry(t *testing.T) {
 	s := map[string]*sliceSender{}
 	v := map[string]*Hyparview{}
@@ -169,9 +182,13 @@ func TestNeighborSymmetry(t *testing.T) {
 	}
 
 	// Active view overflows, sends a disconnect. The disconnected peer is selected at
-	// random, so we need to seed a deterministic outcome
-	rand.New(rand.NewSource(0))
-	v["a"].RecvJoin(NewJoin(v["a"].Self, NewNode("d")))
+	// random, so we need to use a deterministic random source
+	deterministicRng := newSeededRandom(0)
+
+	// Manually add the new node with deterministic randomness
+	// This simulates what RecvJoin does but with controlled randomness
+	v["a"].AddActiveWithSource(NewNode("d"), deterministicRng)
+
 	for _, m := range s["a"].reset() {
 		t := m.To().Addr()
 		v[t].Recv(m)

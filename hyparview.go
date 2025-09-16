@@ -92,28 +92,38 @@ func (v *Hyparview) RecvForwardJoin(r *ForwardJoinRequest) {
 	}
 }
 
-// DropRandActive removes a random active peer and returns the disconnect message following
-// the paper
-func (v *Hyparview) DropRandActive() {
-	idx := v.Active.RandIndex()
+// DropRandActiveWithSource removes a random active peer using the provided RandomSource
+func (v *Hyparview) DropRandActiveWithSource(src RandomSource) {
+	idx := v.Active.RandIndexWithSource(src)
 	node := v.Active.GetIndex(idx)
 	v.Active.DelIndex(idx)
 	v.AddPassive(node)
 	v.Send(NewDisconnect(node, v.Self))
 }
 
-// AddActive adds a node to the active view, possibly dropping an active peer to make room.
-// Paper
-func (v *Hyparview) AddActive(node Node) {
+// DropRandActive removes a random active peer and returns the disconnect message following
+// the paper
+func (v *Hyparview) DropRandActive() {
+	v.DropRandActiveWithSource(nil)
+}
+
+// AddActiveWithSource adds a node to the active view using the provided RandomSource
+func (v *Hyparview) AddActiveWithSource(node Node, src RandomSource) {
 	if EqualNode(node, v.Self) || v.Active.Contains(node) {
 		return
 	}
 
 	if v.Active.IsFull() {
-		v.DropRandActive()
+		v.DropRandActiveWithSource(src)
 	}
 
 	v.Active.Add(node)
+}
+
+// AddActive adds a node to the active view, possibly dropping an active peer to make room.
+// Paper
+func (v *Hyparview) AddActive(node Node) {
+	v.AddActiveWithSource(node, nil)
 }
 
 // AddPassive adds a node to the passive view, possibly dropping a passive peer to make

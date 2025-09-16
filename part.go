@@ -81,24 +81,36 @@ func (v *ViewPart) GetIndex(i int) Node {
 	return v.Nodes[i]
 }
 
-func (v *ViewPart) Shuffled() []Node {
+func (v *ViewPart) ShuffledWithSource(src RandomSource) []Node {
 	l := len(v.Nodes)
 	ns := make([]Node, l)
 	// Start with a copy, fischer-yates needs to operate destructively
 	copy(ns, v.Nodes)
 	for i := l - 1; i > 0; i-- {
-		j := Rint(i)
+		j := RintWithSource(i, src)
 		ns[i], ns[j] = ns[j], ns[i]
 	}
 	return ns
 }
 
+func (v *ViewPart) Shuffled() []Node {
+	return v.ShuffledWithSource(nil)
+}
+
+func (v *ViewPart) RandIndexWithSource(src RandomSource) int {
+	return RintWithSource(len(v.Nodes)-1, src)
+}
+
 func (v *ViewPart) RandIndex() int {
-	return Rint(len(v.Nodes) - 1)
+	return v.RandIndexWithSource(nil)
+}
+
+func (v *ViewPart) RandNodeWithSource(src RandomSource) Node {
+	return v.Nodes[v.RandIndexWithSource(src)]
 }
 
 func (v *ViewPart) RandNode() Node {
-	return v.Nodes[v.RandIndex()]
+	return v.RandNodeWithSource(nil)
 }
 
 func (v *ViewPart) ContainsIndex(n Node) int {
